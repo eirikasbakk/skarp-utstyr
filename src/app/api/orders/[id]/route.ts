@@ -105,7 +105,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   }
 
   if (status === "Videresendt til butikk" && existing.status !== "Videresendt til butikk") {
-    const team = existing.teams as { name: string; email: string | null };
+    const team = (existing.teams as unknown) as { name: string; email: string | null };
     if (team.email) {
       await sendVideresendt(team.email, team.name, Number(id));
     }
