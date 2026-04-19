@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -18,17 +19,20 @@ export default function NavBar({ email, isAdmin }: Props) {
   };
 
   return (
-    <nav className="bg-blue-700 text-white shadow">
-      <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-6">
-        <Link href="/" className="font-bold text-lg tracking-tight">⚽ Skarp Utstyr</Link>
-        <Link href="/" className="text-blue-100 hover:text-white text-sm">Bestillinger</Link>
-        <Link href="/orders/new" className="text-blue-100 hover:text-white text-sm">Ny bestilling</Link>
+    <nav className="bg-black text-white shadow">
+      <div className="max-w-5xl mx-auto px-4 py-2 flex items-center gap-6">
+        <Link href="/" className="flex items-center gap-3 shrink-0">
+          <Image src="/logo.png" alt="Skarp IF" width={48} height={48} className="invert" />
+          <span className="font-bold text-lg tracking-tight">Skarp Utstyr</span>
+        </Link>
+        <Link href="/" className="text-gray-400 hover:text-[#F5A31A] text-sm transition-colors">Bestillinger</Link>
+        <Link href="/orders/new" className="text-gray-400 hover:text-[#F5A31A] text-sm transition-colors">Ny bestilling</Link>
         {isAdmin && (
-          <Link href="/admin" className="text-blue-100 hover:text-white text-sm">Admin</Link>
+          <Link href="/admin" className="text-gray-400 hover:text-[#F5A31A] text-sm transition-colors">Admin</Link>
         )}
         <div className="ml-auto flex items-center gap-4">
-          <span className="text-blue-200 text-xs">{email}</span>
-          <button onClick={logout} className="text-blue-100 hover:text-white text-sm">Logg ut</button>
+          <span className="text-gray-500 text-xs">{email}</span>
+          <button onClick={logout} className="text-gray-400 hover:text-[#F5A31A] text-sm transition-colors">Logg ut</button>
         </div>
       </div>
     </nav>

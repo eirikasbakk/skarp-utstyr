@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -23,24 +24,25 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow p-8 w-full max-w-sm">
-        <div className="text-center mb-6">
-          <div className="text-3xl mb-2">⚽</div>
-          <h1 className="text-xl font-bold text-gray-900">Skarp Utstyr</h1>
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <Image src="/logo.png" alt="Skarp IF" width={100} height={100} />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Skarp Utstyr</h1>
           <p className="text-sm text-gray-500 mt-1">Logg inn for å se bestillinger</p>
         </div>
 
         {sent ? (
           <div className="text-center">
-            <div className="text-4xl mb-3">📧</div>
             <p className="font-medium text-gray-800">Sjekk e-posten din</p>
             <p className="text-sm text-gray-500 mt-2">
               Vi har sendt en innloggingslenke til <strong>{email}</strong>
             </p>
             <button
               onClick={() => setSent(false)}
-              className="mt-4 text-sm text-blue-600 hover:underline"
+              className="mt-4 text-sm text-[#F5A31A] hover:underline"
             >
               Prøv en annen e-postadresse
             </button>
@@ -56,13 +58,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="din@epost.no"
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+              className="w-full py-2.5 bg-black text-white rounded-lg hover:bg-[#F5A31A] hover:text-black text-sm font-semibold transition-colors disabled:opacity-50"
             >
               {loading ? "Sender..." : "Send innloggingslenke"}
             </button>

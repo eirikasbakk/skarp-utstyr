@@ -67,7 +67,7 @@ export default function OrdersPage() {
           {isAdmin && selected.size > 0 && (
             <button
               onClick={() => exportExcel([...selected])}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+              className="px-4 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium"
             >
               Eksporter valgte ({selected.size})
             </button>
@@ -75,14 +75,14 @@ export default function OrdersPage() {
           {isAdmin && (
             <button
               onClick={() => exportExcel()}
-              className="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 text-sm"
+              className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 text-sm"
             >
               Eksporter alle
             </button>
           )}
           <Link
             href="/orders/new"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+            className="px-4 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium"
           >
             + Ny bestilling
           </Link>
@@ -155,7 +155,7 @@ export default function OrdersPage() {
                       {isAdmin && order.status === "Sendt" && (
                         <button
                           onClick={() => markerVideresendt(order.id)}
-                          className="text-green-600 hover:underline"
+                          className="text-[#F5A31A] hover:underline font-medium"
                         >
                           Videresendt
                         </button>

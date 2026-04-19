@@ -11,13 +11,13 @@ export default function AdminPage() {
       <div className="flex gap-2 mb-6">
         <button
           onClick={() => setTab("articles")}
-          className={`px-4 py-2 rounded text-sm font-medium ${tab === "articles" ? "bg-blue-600 text-white" : "bg-white border hover:bg-gray-50"}`}
+          className={`px-4 py-2 rounded text-sm font-medium ${tab === "articles" ? "bg-black text-white" : "bg-white border hover:bg-gray-50"}`}
         >
           Artikler
         </button>
         <button
           onClick={() => setTab("teams")}
-          className={`px-4 py-2 rounded text-sm font-medium ${tab === "teams" ? "bg-blue-600 text-white" : "bg-white border hover:bg-gray-50"}`}
+          className={`px-4 py-2 rounded text-sm font-medium ${tab === "teams" ? "bg-black text-white" : "bg-white border hover:bg-gray-50"}`}
         >
           Lag
         </button>
@@ -73,15 +73,15 @@ function TeamsPanel() {
           <input
             type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Lagnavn (f.eks. G14)"
-            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]"
           />
           <input
             type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
             placeholder="Lagleders e-post (valgfritt)"
-            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]"
           />
         </div>
-        <button onClick={add} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+        <button onClick={add} className="mt-3 px-4 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium">
           Legg til lag
         </button>
       </div>
@@ -93,11 +93,11 @@ function TeamsPanel() {
             {editId === t.id ? (
               <div className="grid grid-cols-2 gap-2">
                 <input autoFocus value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]" />
                 <input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                  placeholder="e-post" className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  placeholder="e-post" className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]" />
                 <div className="col-span-2 flex gap-2">
-                  <button onClick={() => save(t.id)} className="text-blue-600 text-sm hover:underline">Lagre</button>
+                  <button onClick={() => save(t.id)} className="text-[#F5A31A] text-sm hover:underline">Lagre</button>
                   <button onClick={() => setEditId(null)} className="text-gray-400 text-sm hover:underline">Avbryt</button>
                 </div>
               </div>
@@ -108,7 +108,7 @@ function TeamsPanel() {
                   {t.email && <span className="text-gray-400 ml-2 text-xs">{t.email}</span>}
                 </div>
                 <button onClick={() => { setEditId(t.id); setEditForm({ name: t.name, email: t.email ?? "" }); }}
-                  className="text-blue-500 hover:underline">Rediger</button>
+                  className="text-[#F5A31A] hover:underline">Rediger</button>
                 <button onClick={() => remove(t.id)} className="text-red-500 hover:underline">Slett</button>
               </div>
             )}
@@ -167,15 +167,15 @@ function ArticlesPanel() {
         <h2 className="text-sm font-semibold text-gray-700 mb-3">Ny artikkel</h2>
         <div className="grid grid-cols-2 gap-3">
           <input placeholder="Navn" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]" />
           <input placeholder="Artikkelnummer" value={form.article_number} onChange={(e) => setForm({ ...form, article_number: e.target.value })}
-            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]" />
           <input placeholder="Pris (kr)" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })}
-            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]" />
           <input placeholder="Størrelser (S, M, L, XL)" value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })}
-            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            className="border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]" />
         </div>
-        <button onClick={add} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+        <button onClick={add} className="mt-3 px-4 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium">
           Legg til artikkel
         </button>
       </div>
@@ -205,7 +205,7 @@ function ArticlesPanel() {
                     <td className="px-4 py-2"><input value={editForm.sizes} onChange={(e) => setEditForm({ ...editForm, sizes: e.target.value })} placeholder="S, M, L" className="w-full border rounded px-2 py-1 text-sm" /></td>
                     <td className="px-4 py-2 text-right">
                       <div className="flex gap-2 justify-end">
-                        <button onClick={() => saveEdit(a.id)} className="text-blue-600 text-sm hover:underline">Lagre</button>
+                        <button onClick={() => saveEdit(a.id)} className="text-[#F5A31A] text-sm hover:underline">Lagre</button>
                         <button onClick={() => setEditId(null)} className="text-gray-400 text-sm hover:underline">Avbryt</button>
                       </div>
                     </td>
@@ -219,7 +219,7 @@ function ArticlesPanel() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex gap-3 justify-end">
                         <button onClick={() => { setEditId(a.id); setEditForm({ name: a.name, article_number: a.article_number, price: String(a.price), sizes: a.sizes.join(", ") }); }}
-                          className="text-blue-500 text-sm hover:underline">Rediger</button>
+                          className="text-[#F5A31A] text-sm hover:underline">Rediger</button>
                         <button onClick={() => remove(a.id)} className="text-red-500 text-sm hover:underline">Slett</button>
                       </div>
                     </td>

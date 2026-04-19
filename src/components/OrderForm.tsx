@@ -109,7 +109,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
               value={teamId}
               onChange={(e) => setTeamId(Number(e.target.value))}
               disabled={!!order || locked}
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A] disabled:bg-gray-100"
             >
               <option value="">Velg lag...</option>
               {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
@@ -121,7 +121,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
               type="text" value={contact} onChange={(e) => setContact(e.target.value)}
               placeholder="Navn"
               disabled={locked}
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A] disabled:bg-gray-100"
             />
           </div>
           {isAdmin && (
@@ -129,7 +129,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
               <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
               <select
                 value={status} onChange={(e) => setStatus(e.target.value as Status)}
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]"
               >
                 <option>Utkast</option>
                 <option>Sendt</option>
@@ -149,7 +149,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
               <select
                 value={quickArticleId}
                 onChange={(e) => setQuickArticleId(Number(e.target.value))}
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]"
               >
                 {articles.map((a) => (
                   <option key={a.id} value={a.id}>{a.name} ({a.article_number})</option>
@@ -161,13 +161,13 @@ export default function OrderForm({ order, isAdmin }: Props) {
               <input
                 type="number" min={1} max={100} value={quickQty}
                 onChange={(e) => setQuickQty(parseInt(e.target.value) || 1)}
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]"
               />
             </div>
             <button
               onClick={addRows}
               disabled={!quickArticleId}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50 whitespace-nowrap"
+              className="px-4 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50 whitespace-nowrap"
             >
               + Legg til {quickQty} rad{quickQty !== 1 ? "er" : ""}
             </button>
@@ -198,7 +198,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
         {isAdmin ? (
           <button
             onClick={() => save()} disabled={saving}
-            className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+            className="px-5 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50"
           >
             {saving ? "Lagrer..." : "Lagre bestilling"}
           </button>
@@ -212,7 +212,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
             </button>
             <button
               onClick={() => save("Sendt")} disabled={saving}
-              className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+              className="px-5 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50"
             >
               {saving ? "Sender..." : "Send bestilling"}
             </button>
@@ -220,7 +220,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
         ) : (
           <button
             onClick={() => save()} disabled={saving}
-            className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+            className="px-5 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50"
           >
             {saving ? "Lagrer..." : "Lagre endringer"}
           </button>
