@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -22,7 +21,7 @@ export default function NavBar({ email, isAdmin }: Props) {
     <nav className="bg-black text-white shadow">
       <div className="max-w-5xl mx-auto px-4 py-2 flex items-center gap-6">
         <Link href="/" className="flex items-center gap-3 shrink-0">
-          <Image src="/logo.png" alt="Skarp IF" width={48} height={48} className="invert" />
+          <img src="/logo.png" alt="Skarp IF" width={48} height={48} className="invert" />
           <span className="font-bold text-lg tracking-tight">Skarp Utstyr</span>
         </Link>
         <Link href="/" className="text-gray-400 hover:text-[#F5A31A] text-sm transition-colors">Bestillinger</Link>

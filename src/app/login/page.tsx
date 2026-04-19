@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -28,7 +27,7 @@ export default function LoginPage() {
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Image src="/logo.png" alt="Skarp IF" width={100} height={100} />
+            <img src="/logo.png" alt="Skarp IF" style={{ width: 120, height: "auto" }} />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Skarp Utstyr</h1>
           <p className="text-sm text-gray-500 mt-1">Logg inn for å se bestillinger</p>
