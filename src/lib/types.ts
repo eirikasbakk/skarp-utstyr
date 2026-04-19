@@ -1,4 +1,4 @@
-export type Status = "Utkast" | "Sendt" | "Bekreftet";
+export type Status = "Utkast" | "Sendt" | "Videresendt til butikk";
 
 export interface Team {
   id: number;

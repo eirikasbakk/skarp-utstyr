@@ -6,9 +6,10 @@ import OrderTable, { newRow, RowData } from "./OrderTable";
 
 interface Props {
   order?: Order & { items: OrderItem[] };
+  isAdmin: boolean;
 }
 
-export default function OrderForm({ order }: Props) {
+export default function OrderForm({ order, isAdmin }: Props) {
   const router = useRouter();
   const [teams, setTeams] = useState<Team[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
@@ -30,6 +31,8 @@ export default function OrderForm({ order }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  const locked = status === "Videresendt til butikk";
+
   useEffect(() => {
     Promise.all([
       fetch("/api/teams").then((r) => r.json()),
@@ -38,8 +41,9 @@ export default function OrderForm({ order }: Props) {
       setTeams(t);
       setArticles(a);
       if (!quickArticleId && a.length > 0) setQuickArticleId(a[0].id);
+      if (!order && t.length === 1) setTeamId(t[0].id);
     });
-  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addRows = () => {
     if (!quickArticleId || quickQty < 1) return;
@@ -47,10 +51,11 @@ export default function OrderForm({ order }: Props) {
     setRows((prev) => [...prev, ...newRows]);
   };
 
-  const save = async () => {
+  const save = async (saveStatus?: Status) => {
     setError("");
     if (!teamId || !contact.trim()) { setError("Lag og kontaktperson er påkrevd."); return; }
     setSaving(true);
+    const finalStatus = saveStatus ?? status;
     try {
       let orderId: number;
       if (order) {
@@ -68,7 +73,7 @@ export default function OrderForm({ order }: Props) {
       const res = await fetch(`/api/orders/${orderId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contact_person: contact, status, items: rows }),
+        body: JSON.stringify({ contact_person: contact, status: finalStatus, items: rows }),
       });
       if (!res.ok) throw new Error((await res.json()).error);
       router.push("/");
@@ -79,20 +84,31 @@ export default function OrderForm({ order }: Props) {
     }
   };
 
+  if (locked && !isAdmin) {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+        <p className="text-green-800 font-medium text-lg mb-1">Bestillingen er videresendt til butikken</p>
+        <p className="text-green-600 text-sm">Bestillingen kan ikke lenger endres.</p>
+        <button onClick={() => router.push("/")} className="mt-4 px-4 py-2 border rounded text-sm hover:bg-gray-50">
+          Tilbake
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {error && <p className="text-red-600 text-sm bg-red-50 p-3 rounded">{error}</p>}
 
-      {/* Bestillingsinfo */}
       <div className="bg-white rounded-lg shadow p-5">
         <h2 className="text-sm font-semibold text-gray-700 mb-4">Bestillingsinfo</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className={`grid gap-4 ${isAdmin ? "grid-cols-3" : "grid-cols-2"}`}>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Lag</label>
             <select
               value={teamId}
               onChange={(e) => setTeamId(Number(e.target.value))}
-              disabled={!!order}
+              disabled={!!order || locked}
               className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
             >
               <option value="">Velg lag...</option>
@@ -104,82 +120,111 @@ export default function OrderForm({ order }: Props) {
             <input
               type="text" value={contact} onChange={(e) => setContact(e.target.value)}
               placeholder="Navn"
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={locked}
+              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
             />
           </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
-            <select
-              value={status} onChange={(e) => setStatus(e.target.value as Status)}
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option>Utkast</option>
-              <option>Sendt</option>
-              <option>Bekreftet</option>
-            </select>
-          </div>
+          {isAdmin && (
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
+              <select
+                value={status} onChange={(e) => setStatus(e.target.value as Status)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option>Utkast</option>
+                <option>Sendt</option>
+                <option>Videresendt til butikk</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Legg til artikler */}
-      <div className="bg-white rounded-lg shadow p-5">
-        <h2 className="text-sm font-semibold text-gray-700 mb-4">Legg til artikler</h2>
-        <div className="flex items-end gap-3">
-          <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-600 mb-1">Artikkel</label>
-            <select
-              value={quickArticleId}
-              onChange={(e) => setQuickArticleId(Number(e.target.value))}
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      {!locked && (
+        <div className="bg-white rounded-lg shadow p-5">
+          <h2 className="text-sm font-semibold text-gray-700 mb-4">Legg til artikler</h2>
+          <div className="flex items-end gap-3">
+            <div className="flex-1">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Artikkel</label>
+              <select
+                value={quickArticleId}
+                onChange={(e) => setQuickArticleId(Number(e.target.value))}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {articles.map((a) => (
+                  <option key={a.id} value={a.id}>{a.name} ({a.article_number})</option>
+                ))}
+              </select>
+            </div>
+            <div className="w-28">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Antall rader</label>
+              <input
+                type="number" min={1} max={100} value={quickQty}
+                onChange={(e) => setQuickQty(parseInt(e.target.value) || 1)}
+                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button
+              onClick={addRows}
+              disabled={!quickArticleId}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50 whitespace-nowrap"
             >
-              {articles.map((a) => (
-                <option key={a.id} value={a.id}>{a.name} ({a.article_number})</option>
-              ))}
-            </select>
+              + Legg til {quickQty} rad{quickQty !== 1 ? "er" : ""}
+            </button>
           </div>
-          <div className="w-28">
-            <label className="block text-xs font-medium text-gray-600 mb-1">Antall rader</label>
-            <input
-              type="number" min={1} max={100} value={quickQty}
-              onChange={(e) => setQuickQty(parseInt(e.target.value) || 1)}
-              className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <button
-            onClick={addRows}
-            disabled={!quickArticleId}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50 whitespace-nowrap"
-          >
-            + Legg til {quickQty} rad{quickQty !== 1 ? "er" : ""}
-          </button>
         </div>
-      </div>
+      )}
 
-      {/* Tabell */}
       {rows.length > 0 && (
         <div className="bg-white rounded-lg shadow p-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-gray-700">
               Bestillingslinje — {rows.length} rad{rows.length !== 1 ? "er" : ""}
             </h2>
-            <button
-              onClick={() => setRows([])}
-              className="text-xs text-red-400 hover:text-red-600 hover:underline"
-            >
-              Tøm tabell
-            </button>
+            {!locked && (
+              <button
+                onClick={() => setRows([])}
+                className="text-xs text-red-400 hover:text-red-600 hover:underline"
+              >
+                Tøm tabell
+              </button>
+            )}
           </div>
-          <OrderTable articles={articles} rows={rows} onChange={setRows} />
+          <OrderTable articles={articles} rows={rows} onChange={locked ? () => {} : setRows} />
         </div>
       )}
 
       <div className="flex gap-3">
-        <button
-          onClick={save} disabled={saving}
-          className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
-        >
-          {saving ? "Lagrer..." : "Lagre bestilling"}
-        </button>
+        {isAdmin ? (
+          <button
+            onClick={() => save()} disabled={saving}
+            className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+          >
+            {saving ? "Lagrer..." : "Lagre bestilling"}
+          </button>
+        ) : status === "Utkast" ? (
+          <>
+            <button
+              onClick={() => save("Utkast")} disabled={saving}
+              className="px-5 py-2 border border-gray-300 rounded text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+            >
+              {saving ? "Lagrer..." : "Lagre utkast"}
+            </button>
+            <button
+              onClick={() => save("Sendt")} disabled={saving}
+              className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+            >
+              {saving ? "Sender..." : "Send bestilling"}
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => save()} disabled={saving}
+            className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+          >
+            {saving ? "Lagrer..." : "Lagre endringer"}
+          </button>
+        )}
         <button
           onClick={() => router.push("/")}
           className="px-5 py-2 border rounded text-sm hover:bg-gray-50"

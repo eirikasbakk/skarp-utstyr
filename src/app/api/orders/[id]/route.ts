@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser, isAdmin, getTeamIdForUser } from "@/lib/auth";
+import { sendVideresendt } from "@/lib/email";
 import { Status } from "@/lib/types";
 
 async function canAccessOrder(userEmail: string, orderId: string): Promise<boolean> {
@@ -24,7 +25,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const supabase = await createClient();
   const { data: order } = await supabase
     .from("orders")
-    .select("*, teams(name)")
+    .select("*, teams(name, email)")
     .eq("id", id)
     .single();
   if (!order) return NextResponse.json({ error: "Ikke funnet" }, { status: 404 });
@@ -57,13 +58,29 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return NextResponse.json({ error: "Ingen tilgang" }, { status: 403 });
   }
 
+  const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("orders")
+    .select("status, team_id, teams(name, email)")
+    .eq("id", id)
+    .single();
+
+  if (!existing) return NextResponse.json({ error: "Ikke funnet" }, { status: 404 });
+
+  if (!isAdmin(user.email!) && existing.status === "Videresendt til butikk") {
+    return NextResponse.json({ error: "Bestillingen er låst og kan ikke endres" }, { status: 403 });
+  }
+
   const { contact_person, status, items } = await req.json();
-  const validStatuses: Status[] = ["Utkast", "Sendt", "Bekreftet"];
-  if (status && !validStatuses.includes(status)) {
+  const adminStatuses: Status[] = ["Utkast", "Sendt", "Videresendt til butikk"];
+  const lagStatuses: Status[] = ["Utkast", "Sendt"];
+  const allowed = isAdmin(user.email!) ? adminStatuses : lagStatuses;
+
+  if (status && !allowed.includes(status)) {
     return NextResponse.json({ error: "Ugyldig status" }, { status: 400 });
   }
 
-  const supabase = await createClient();
   const { error } = await supabase
     .from("orders")
     .update({ contact_person, status, updated_at: new Date().toISOString() })
@@ -84,6 +101,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
           print_number: i.print_number ?? "",
         }))
       );
+    }
+  }
+
+  if (status === "Videresendt til butikk" && existing.status !== "Videresendt til butikk") {
+    const team = existing.teams as { name: string; email: string | null };
+    if (team.email) {
+      await sendVideresendt(team.email, team.name, Number(id));
     }
   }
 

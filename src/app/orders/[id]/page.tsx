@@ -1,4 +1,5 @@
 import OrderForm from "@/components/OrderForm";
+import { getSessionUser, isAdmin } from "@/lib/auth";
 import { notFound } from "next/navigation";
 
 async function getOrder(id: string) {
@@ -10,13 +11,14 @@ async function getOrder(id: string) {
 
 export default async function EditOrderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const order = await getOrder(id);
+  const [order, user] = await Promise.all([getOrder(id), getSessionUser()]);
   if (!order) notFound();
+  const admin = isAdmin(user?.email ?? "");
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Rediger bestilling</h1>
-      <OrderForm order={order} />
+      <OrderForm order={order} isAdmin={admin} />
     </div>
   );
 }
