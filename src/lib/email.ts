@@ -1,10 +1,15 @@
 async function sendEmail(to: string, subject: string, html: string) {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env.SENDGRID_API_KEY;
   if (!apiKey) return;
-  await fetch("https://api.resend.com/emails", {
+  await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: "Skarp Utstyr <noreply@skarp-utstyr.vercel.app>", to, subject, html }),
+    body: JSON.stringify({
+      personalizations: [{ to: [{ email: to }] }],
+      from: { email: process.env.SENDGRID_FROM_EMAIL ?? "noreply@skarp-utstyr.vercel.app", name: "Skarp Utstyr" },
+      subject,
+      content: [{ type: "text/html", value: html }],
+    }),
   });
 }
 
