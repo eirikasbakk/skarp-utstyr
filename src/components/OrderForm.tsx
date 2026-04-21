@@ -30,6 +30,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
   const [quickQty, setQuickQty] = useState(1);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [confirmSend, setConfirmSend] = useState(false);
 
   const locked = status === "Videresendt til butikk";
 
@@ -127,14 +128,7 @@ export default function OrderForm({ order, isAdmin }: Props) {
           {isAdmin && (
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
-              <select
-                value={status} onChange={(e) => setStatus(e.target.value as Status)}
-                className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F5A31A]"
-              >
-                <option>Utkast</option>
-                <option>Sendt</option>
-                <option>Videresendt til butikk</option>
-              </select>
+              <div className="w-full border rounded px-3 py-2 text-sm bg-gray-50 text-gray-700">{status}</div>
             </div>
           )}
         </div>
@@ -194,28 +188,61 @@ export default function OrderForm({ order, isAdmin }: Props) {
         </div>
       )}
 
+      {confirmSend && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <p className="text-sm font-medium text-amber-900 mb-1">Send til utstyrsansvarlig?</p>
+          <p className="text-sm text-amber-700 mb-4">Dobbeltsjekk bestillingen over. Etter sending kan du ikke gjøre endringer.</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => { setConfirmSend(false); save("Sendt"); }} disabled={saving}
+              className="px-4 py-2 bg-black text-white rounded text-sm font-medium hover:bg-[#F5A31A] hover:text-black transition-colors disabled:opacity-50"
+            >
+              {saving ? "Sender..." : "Ja, send til utstyrsansvarlig"}
+            </button>
+            <button
+              onClick={() => setConfirmSend(false)}
+              className="px-4 py-2 border rounded text-sm hover:bg-gray-50"
+            >
+              Angre
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-3">
         {isAdmin ? (
-          <button
-            onClick={() => save()} disabled={saving}
-            className="px-5 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50"
-          >
-            {saving ? "Lagrer..." : "Lagre bestilling"}
-          </button>
+          <>
+            <button
+              onClick={() => save()} disabled={saving}
+              className="px-5 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50"
+            >
+              {saving ? "Lagrer..." : "Lagre"}
+            </button>
+            {status === "Sendt" && (
+              <button
+                onClick={() => save("Videresendt til butikk")} disabled={saving}
+                className="px-5 py-2 bg-black text-white rounded hover:bg-[#F5A31A] hover:text-black text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                {saving ? "Lagrer..." : "Sendt til butikk"}
+              </button>
+            )}
+          </>
         ) : status === "Utkast" ? (
           <>
             <button
-              onClick={() => save("Utkast")} disabled={saving}
+              onClick={() => save("Utkast")} disabled={saving || confirmSend}
               className="px-5 py-2 border border-gray-300 rounded text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
             >
               {saving ? "Lagrer..." : "Lagre utkast"}
             </button>
-            <button
-              onClick={() => save("Sendt")} disabled={saving}
-              className="px-5 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50"
-            >
-              {saving ? "Sender..." : "Send bestilling"}
-            </button>
+            {!confirmSend && (
+              <button
+                onClick={() => setConfirmSend(true)} disabled={saving}
+                className="px-5 py-2 bg-[#F5A31A] text-black rounded hover:bg-[#D4880A] text-sm font-medium disabled:opacity-50"
+              >
+                Send til utstyrsansvarlig
+              </button>
+            )}
           </>
         ) : (
           <button
@@ -225,12 +252,14 @@ export default function OrderForm({ order, isAdmin }: Props) {
             {saving ? "Lagrer..." : "Lagre endringer"}
           </button>
         )}
-        <button
-          onClick={() => router.push("/")}
-          className="px-5 py-2 border rounded text-sm hover:bg-gray-50"
-        >
-          Avbryt
-        </button>
+        {!confirmSend && (
+          <button
+            onClick={() => router.push("/")}
+            className="px-5 py-2 border rounded text-sm hover:bg-gray-50"
+          >
+            Avbryt
+          </button>
+        )}
       </div>
     </div>
   );

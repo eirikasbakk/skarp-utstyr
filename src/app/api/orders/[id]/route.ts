@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionUser, isAdmin, getTeamIdForUser } from "@/lib/auth";
-import { sendVideresendt } from "@/lib/email";
+import { sendVideresendt, sendTilAdmin } from "@/lib/email";
 import { Status } from "@/lib/types";
 
 async function canAccessOrder(userEmail: string, orderId: string): Promise<boolean> {
@@ -102,6 +102,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         }))
       );
     }
+  }
+
+  if (status === "Sendt" && existing.status !== "Sendt") {
+    const team = (existing.teams as unknown) as { name: string; email: string | null };
+    const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim()).filter(Boolean);
+    await sendTilAdmin(adminEmails, team.name, Number(id));
   }
 
   if (status === "Videresendt til butikk" && existing.status !== "Videresendt til butikk") {
