@@ -31,6 +31,7 @@ export default function NavBar({ email, isAdmin }: Props) {
         )}
         <div className="ml-auto flex items-center gap-4">
           <span className="text-gray-500 text-xs">{email}</span>
+          <Link href="/konto" className="text-gray-400 hover:text-[#F5A31A] text-sm transition-colors">Endre passord</Link>
           <button onClick={logout} className="text-gray-400 hover:text-[#F5A31A] text-sm transition-colors">Logg ut</button>
         </div>
       </div>
