@@ -80,6 +80,11 @@ export default function LoginPage() {
                 Glemt passord?
               </button>
             </p>
+            <p className="text-center">
+              <a href="/register" className="text-sm text-gray-500 hover:text-[#F5A31A] hover:underline">
+                Ny bruker? Registrer deg
+              </a>
+            </p>
           </form>
         ) : resetSent ? (
           <div className="text-center space-y-3">

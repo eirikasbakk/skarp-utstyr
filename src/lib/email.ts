@@ -1,14 +1,14 @@
 async function sendEmail(to: string, subject: string, html: string) {
-  const apiKey = process.env.SENDGRID_API_KEY;
+  const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) return;
-  await fetch("https://api.sendgrid.com/v3/mail/send", {
+  await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    headers: { "api-key": apiKey, "Content-Type": "application/json" },
     body: JSON.stringify({
-      personalizations: [{ to: [{ email: to }] }],
-      from: { email: process.env.SENDGRID_FROM_EMAIL ?? "noreply@skarp-utstyr.vercel.app", name: "Skarp Utstyr" },
+      to: [{ email: to }],
+      sender: { email: process.env.BREVO_FROM_EMAIL ?? "noreply@skarp-utstyr.vercel.app", name: "Skarp Utstyr" },
       subject,
-      content: [{ type: "text/html", value: html }],
+      htmlContent: html,
     }),
   });
 }
